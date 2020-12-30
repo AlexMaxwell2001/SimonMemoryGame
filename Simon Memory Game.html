@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<!-- linking jQuery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!-- linking the orbitron font-->
+<link href="https://fonts.googleapis.com/css?family=Orbitron&display=swap" rel="stylesheet">
+
+<style>
+			#yellow-circle 
+			{
+			  background-color: yellow;
+			  width: 130px;
+			  height: 130px;
+			  border-radius: 50%;
+			  color: white;
+			  position:absolute;
+			  left:250px;
+			  top:120px;
+			}
+
+			#red-circle 
+			{
+			  background-color: red;
+			  width: 130px;
+			  height: 130px;
+			  border-radius: 50%;
+			  color: white;
+			  position:absolute;
+			  left:250px;
+			  top:-70px;
+			}
+
+
+			#green-circle 
+			{
+			  background-color: green;
+			  height: 130px;
+			  width: 130px;
+			  clear: left;
+			  border-radius: 50%;
+			  color: white;
+			  position:absolute;
+			  right:250px;
+			  top:-70px;
+			}
+
+			#blue-circle 
+			{
+			  background-color: blue;
+			  width: 130px;
+			  height: 130px;
+			  border-radius: 50%;
+			  color: white;
+			  position:absolute;
+			  right:250px;
+			  top:120px;
+			}
+
+			#green-circle:active 
+			{
+			  background-color: lightgreen;
+			}
+
+			#red-circle:active
+			{
+			  background-color: pink;
+			}
+
+			#yellow-circle:active 
+			{
+			  background-color: lightyellow;
+			}
+
+			#blue-circle:active 
+			{
+			  background-color: lightblue;
+			}
+			.box-display 
+			{
+			  border: 5px solid grey;
+			  background-color:	rgb(166, 166, 166);
+			  text-align: center;
+			}
+			#start-box
+			{
+				width:130px;
+				height:45px;
+				position: absolute;
+				top: 80px;
+				right:75px;
+				color:white;
+				border-color: white;
+				border-width: 3px;
+				font-size: 250%;
+				color:black;
+				font-family: 'Orbitron';
+			}
+			
+			#record-box
+			{
+				position: absolute;
+				top: 80px;
+				left:32px;
+				height:45px;
+				width :30px;
+				border-color: white;
+				border-width: 3px;
+			}
+			#count-box
+			{
+				position: absolute;
+				top: 80px;
+				right:30px;
+				height:45px;
+				width :30px;
+				border-color: white;
+				border-width: 3px;
+			}
+			#start-box:hover 
+			{
+			  cursor: pointer;
+			}
+
+			#black-oval
+			{
+			    width:290px;
+			    height:195px;
+			    background-color:rgb(26, 26, 26);
+			    color:black;
+			    border-radius:50%;
+			    position:absolute;
+			    top:130px;
+			    right:720px;
+			}
+			.background-circles
+			{
+			    background-color:black;
+			    width:145px;
+			    height:145px;
+			    border-radius:50%;
+			}
+			#bcircle1
+			{
+			  position:absolute;
+			  top:-77px;
+			  right:242px;
+			}
+			#bcircle2
+			{
+			  position:absolute;
+			  top:-77px;
+			  left:242px;
+			}
+			#bcircle3
+			{
+			  position:absolute;
+			  top:113px;
+			  left:242px;
+			}
+			#bcircle4
+			{
+			  position:absolute;
+			  top:113px;
+			  right:242px;
+			}
+			.text-inside
+			{
+				padding-top: 15px;
+				font-family: 'Orbitron';
+				color:black;
+			}
+			#display-colour
+			{
+				width:10px;
+				height:10px;
+				border-radius:50%;
+				background-color:red;
+				position:absolute;
+				top:140px;
+			    left:145px;
+			}
+ </style>
+
+<script>
+	 //track the sequence of colours to be remembered
+     var trackComputer = [];
+	 //tracks the user inputted colour pattern
+     var input = [];
+	 //if game over we flash the four colours of this array
+	 var gameOver= ["yellow-circle", "blue-circle", "green-circle", "red-circle"];
+	 //keeps track of the round number
+     var roundnumber = 0;
+	 //boolean flag to say when we can press start
+	 var start = false;
+
+
+	//to start the game we click start
+  function startClick() 
+  {
+	//if the start is set to false or defaultly false we can start
+	if(!start)
+	{
+		//display the light as green
+	    document.getElementById("display-colour").style.background =  "chartreuse";
+		//set to true so we can no longer use the start button during the game
+		start = true;
+		//we start 3 seconds after the light goes green
+	    waitToStart();
+	}
+   
+  } 
+  
+  /*function to make the game start after 2 seconds
+   but with the interval of one second between 
+   flashes the game starts in 3 seconds*/
+  function waitToStart()
+  {
+  		setTimeout(function()
+  		{
+        	playerGo();
+  		}, 2000);
+  }
+  
+  /*function to find the random colour using randomness 
+  and the four colour options*/
+  function randomColour(array) 
+  {
+    var coloursAr = ["yellow-circle", "blue-circle", "green-circle", "red-circle"];
+	// return the colour chosen and put it into the trackComputer array
+    return array.push(coloursAr[Math.floor(Math.random() *coloursAr.length)]);
+  };
+
+  //reset the game 
+  function resetGame() 
+  {
+    //reset the round count
+    var elm1=document.getElementById("text");
+	roundnumber = parseInt(elm1.innerHTML);
+    elm1.innerHTML = 0;
+	//reset the computer tracked array
+    resetTrack();
+	// reset the light to red as it's off
+    document.getElementById("display-colour").style.background =  "red";
+	//reset the input array
+    resetInput();
+	//state the flag is false so we can start again
+	start=false;
+  };
+
+  //controls the playing functionality 
+  function playerGo() 
+  {
+    //increment the rounds every succesive turn
+    incRounds();
+	//we call the randomColour function to put a random colour into the computer array  
+    randomColour(trackComputer);
+	/*we make the computer flash the lights on the chosen sequence of random colours
+	if we are between round 0 and 4 we go at a normal 1 second interval between flashes*/
+	if(roundnumber<5 && roundnumber>=0)
+	{
+		//100 as we have reached round 5 and we want to decrease the interval by 100 milliseconds
+		flashButtons(trackComputer,0);
+	}
+	//if we are between round 5 and 8 we go at a 0.9 second interval between flashes
+	else if(roundnumber>=5 && roundnumber<9)
+	{
+
+		//100 as we have reached round 5 and we want to decrease the interval by 100 milliseconds
+		flashButtons(trackComputer,100);
+	}
+	//if we are between round 9 and 12, we go at a 0.8 second interval between flashes
+	else if(roundnumber>=9 && roundnumber<13)
+	{
+		//200 as we've reached round 9 and we want to decrease the interval by 200 milliseconds
+		flashButtons(trackComputer,200);
+	}
+	//if we are in round 13 or over, we go at a 0.7 second interval between flashes
+	else if(roundnumber>=13)
+	{
+		//`300 as we've reached round 13 and we want to decrease the interval by 300 milliseconds
+		flashButtons(trackComputer,300);
+	}
+    $(".button").off("click").on("click", function()
+    {
+
+	  /* my best attempt at trying to solve the 5 second no interaction functionality
+
+	  var clicked =false; 
+	  
+	  if(input.length!== trackComputer.length)
+	  {
+	  	 input.push($(this).attr("id"));
+	  	 window.addEventListener("click",function(){clicked=true;});
+	  	 if(clicked)
+	  	 {
+	  	 	ckearInterval(timer);
+	  	 }
+	  	 var timer = setTimeout(resetGame(),5000)
+	  }*/
+
+      //every time we click on a circle its pushed into the input array
+      input.push($(this).attr("id"));
+	  // we loop throungh the input array
+      for (var k = 0; k < input.length; k++) 
+      {
+		/*JSON.stringify turns them both into strings, and we compares the trackComputer and input 
+		arrays to see if the computer sequence is the same as the input hence right answer.*/
+        if (JSON.stringify(trackComputer) === JSON.stringify(input)) 
+	    {
+		  //reset the input for the next round
+          resetInput();
+		  //call the playerGo fuction to start the next round
+          playerGo();
+		  //break from the for loop
+          break;
+        }
+
+		//if the input isn't what the computer outputed , wrong answer
+        if (input[k] !== trackComputer[k] )
+	    {
+		  //checking the final round number to the highest record count
+		  setRecord(roundnumber);
+		  //game over signal, repeat 5 times
+		  for(var i = 0;i<5;i++)
+		  {
+				//we call the flash game over method
+				flashOver(gameOver);
+		  }
+		  //call the resetGame fuction to reset the game
+          resetGame();
+		  //break from the for loop
+          break;
+        }
+      }
+    });
+ };
+  /* function uses jquery and the .fadeTo() function to control 
+  the flashes and on which id/circle we will flash*/
+  function flashButtons(array,index)
+  {
+    //for looping through the trackComputer array to flash the randomly chosen colour
+    var count = 0;
+	//time interval to seperate the flashes
+    var timeInterval = setInterval(function() 
+    {
+	  /*if we loop up to the length of the array
+	  we clear the interval for the next round*/
+	  if (count >= array.length) 
+	  {
+	    clearInterval(timeInterval);
+	  }
+	  // based on the ID of the circle we use fadeTo() to create a flash animation
+	  $("#" + array[count]).fadeTo("slow", 0).fadeTo("slow", 1);
+	  //increment count
+	  count++;
+	  //interval of one second between flashes
+	}, 
+	1000-index);
+  };
+  
+  //to state the game is over we flash all colours four times
+  function flashOver(array)
+  {
+	/*same as the flashButtons function we loop through 
+	the colours and flahs them depednig on the ID*/
+    var count = 0;
+    var timeInterval = setInterval(function() 
+    {
+	  if (count >= array.length) 
+	  {
+	    clearInterval(timeInterval);
+	  }
+	  $("#" + array[count]).fadeTo("slow", 0).fadeTo("slow", 1);
+	  count++;
+	 
+	});
+  };
+  
+  //reset the user inputted sequence of colours
+  function resetInput() 
+  {
+    input = [];
+  };
+  //reset the compute outputed array 
+  function resetTrack()
+  {
+    trackComputer=[];
+  };
+  
+  // increment the rounds
+  function incRounds() 
+  {
+	//get the value of round's box and increment it each call
+    var elm1=document.getElementById("text");
+	roundnumber = parseInt(elm1.innerHTML);
+	roundnumber++;
+    elm1.innerHTML = roundnumber;
+  };
+  
+  // highest score 
+  function setRecord() 
+  {
+    /*if the round number is greater than the tracked highest record
+	 we put the roundnumber as the highest score*/
+    var elm1=document.getElementById("text1");
+	var number = parseInt(elm1.innerHTML);
+	if(roundnumber>number)
+	{
+		elm1.innerHTML = roundnumber;
+	}
+  };
+</script>
+
+<title>Simon Memory Game</title>
+
+</head>
+
+<body>
+  
+  <!--Main black Oval shaped surface-->
+  <div id='black-oval'>
+    
+	<!--container for the circles-->
+   <div id='container-Circles'>
+    <!--the green circle and its black background circle-->
+    <div class= 'background-circles' id= 'bcircle1'></div>
+    <div class='button' id='green-circle' > </div>
+	<!--the red circle and its black background circle-->
+    <div class= 'background-circles' id= 'bcircle2'></div>
+    <div class='button' id='red-circle'> </div>
+	<!--the yellow circle and its black background circle-->
+    <div class= 'background-circles' id= 'bcircle3'></div>
+    <div class='button' id='yellow-circle'> </div>
+	<!--the blue circle and its black background circle-->
+    <div class= 'background-circles' id= 'bcircle4'></div>
+    <div class='button' id='blue-circle'> </div>
+  </div>
+	<!--The game start and end light-->
+	<div id= 'display-colour'></div>
+	
+	<!--box to keep track of the record-->
+    <div class='box-display' id='record-box'>
+		<!--container to manipulate the numbers inside-->
+    	<div class ='text-inside' id="text1">
+		00
+    	</div>
+		
+    </div>
+
+	<!--box to keep track of the roundnumber-->
+    <div class='box-display' id='count-box'>
+		<!--container to manipulate the numbers inside-->
+    	<div class ='text-inside' id = "text">
+    	00
+    	</div>
+		
+	</div>
+	
+	<!--on clicking Start we add the startClick() functionality-->
+	<span onClick="startClick();">
+		<div class='box-display' id='start-box'	>Start</div>
+	</span>
+  </div>
+ 
+</body>
+<!-- works in both mozilla firefox and google chrome, Windows , 73.0.1 version--> 
+</html>
